@@ -14,7 +14,7 @@ pip install -r requirement.txt
 ## Purpose
 We introduce IntegrAO, an unsupervised framework integrating incomplete multi-omics and classifying new biological samples. 
 
-![integrAO]()
+![integrAO](https://github.com/bowang-lab/IntegrAO/blob/main/figures/overview.png)
 
 # :heavy_plus_sign: Tutorial
 
