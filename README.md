@@ -1,4 +1,4 @@
-# InterAO
+# IntegrAO
 This is the official codebase for **Integrate Any Omics: Towards genome-wide data integration for patient stratification**.
 
 
