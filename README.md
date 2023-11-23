@@ -21,5 +21,6 @@ We introduce IntegrAO, an unsupervised framework integrating incomplete multi-om
 We offer the following tutorials for demonstration:
 
 * [Integrate simulated butterfly datasets]()
+* [Integrate simulated omics datasets]()
 
 
