@@ -2,7 +2,4 @@ numpy
 pandas
 snfpy
 matplotlib
-torch
-torchvision
-torch_geometric
 umap-learn
