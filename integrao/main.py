@@ -219,7 +219,7 @@ def integrao_fuse(aff, dicts_common, dicts_unique, original_order, neighbor_size
         Fused similarity networks of input arrays
     """
 
-    print("Start applying diffusion! with new method")
+    print("Start applying diffusion!")
 
     start_time = time.time()
 

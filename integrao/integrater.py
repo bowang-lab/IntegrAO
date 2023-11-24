@@ -60,7 +60,7 @@ class integrao_integrater(object):
 
             S_dfs.append(S_df)
 
-        self.fused_networks = snf2(
+        self.fused_networks = integrao_fuse(
             S_dfs.copy(),
             dicts_common=self.dicts_common,
             dicts_unique=self.dicts_unique,
