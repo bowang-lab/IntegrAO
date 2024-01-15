@@ -8,8 +8,8 @@ This package requires Python version 3.6 or greater. Assuming you have the corre
 git clone https://github.com/bowang-lab/IntegrAO.git
 conda create -n integrAO python=3.9 -y
 conda activate integrAO
-$ pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113  --extra-index-url https://download.pytorch.org/whl/cu113
-$ pip install torch-geometric==2.2.0 -f https://data.pyg.org/whl/torch-1.12.0+cu113.html
+pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113  --extra-index-url https://download.pytorch.org/whl/cu113
+pip install torch-geometric==2.2.0 -f https://data.pyg.org/whl/torch-1.12.0+cu113.html
 pip install -r requirement.txt
 ```
 
