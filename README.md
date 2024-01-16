@@ -8,6 +8,7 @@ This package requires Python version 3.6 or greater. If you want to utilize GPU 
 2. Install [Pytorch](https://pytorch.org/get-started/previous-versions/#linux-and-windows-4) 2.1.0: `pip install torch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 --index-url https://download.pytorch.org/whl/cu118`
 3. Install [Pytorch-geometric](https://pytorch-geometric.readthedocs.io/en/latest/install/installation.html): `pip install torch_geometric`
 4. Install other requirements: `pip install -r requirement.txt`
+5. Download code: `git clone https://github.com/bowang-lab/IntegrAO.git`
 
 
 ## 🧬 Introduction
