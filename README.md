@@ -23,5 +23,5 @@ We introduce IntegrAO, an unsupervised framework integrating incomplete multi-om
 We offer the following tutorials for demonstration:
 
 * [Integrate simulated butterfly datasets](https://github.com/bowang-lab/IntegrAO/blob/main/tutorials/simulated_butterfly.ipynb)
-
+* [Integrate simulated cancer omics datasets](https://github.com/bowang-lab/IntegrAO/blob/main/tutorials/simulated_cancer_omics.ipynb)
 
