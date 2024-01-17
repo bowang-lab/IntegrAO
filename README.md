@@ -1,5 +1,5 @@
 # IntegrAO
-This is the official codebase for **Integrate Any Omics: Towards genome-wide data integration for patient stratification**.
+This is the official codebase for **Integrate Any Omics: Towards genome-wide data integration for patient stratification**.[[arXiv]](https://arxiv.org/abs/2401.07937)
 
 
 ## 🔨 Installation
