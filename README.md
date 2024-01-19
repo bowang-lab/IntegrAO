@@ -28,5 +28,10 @@ We offer the following tutorials for demonstration:
 
 ## Citing IntegrAO
 ```bash
-
+@article{ma2024integrate,
+  title={Integrate Any Omics: Towards genome-wide data integration for patient stratification},
+  author={Ma, Shihao and Zeng, Andy GX and Haibe-Kains, Benjamin and Goldenberg, Anna and Dick, John E and Wang, Bo},
+  journal={arXiv preprint arXiv:2401.07937},
+  year={2024}
+}
 ```
