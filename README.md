@@ -1,6 +1,9 @@
 # IntegrAO
 This is the official codebase for **Integrate Any Omics: Towards genome-wide data integration for patient stratification**.[[arXiv]](https://arxiv.org/abs/2401.07937)
 
+## 🔨 Hardware requirements
+`IntegrAO` package requires only a standard computer with enough RAM to support the in-memory operations.
+
 
 ## 🔨 Installation
 This package requires Python version 3.6 or greater. If you want to utilize GPU computation, make sure you install the matching Pytorch and CUDA versions. 
