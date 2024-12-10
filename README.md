@@ -2,8 +2,8 @@
 This is the official codebase for **Integrate Any Omics: Towards genome-wide data integration for patient stratification**.
 
 [![Preprint](https://img.shields.io/badge/preprint-available-brightgreen)](https://arxiv.org/abs/2401.07937) &nbsp;
-[![Documentation](https://img.shields.io/badge/docs-available-brightgreen)](https://scgpt.readthedocs.io/en/latest/) &nbsp;
-[![PyPI version](https://badge.fury.io/py/scgpt.svg)](https://badge.fury.io/py/scgpt) &nbsp;
+[![Documentation](https://img.shields.io/badge/docs-available-brightgreen)]() &nbsp;
+[![PyPI version](https://badge.fury.io/py/integrao.svg)](https://badge.fury.io/py/integrao) &nbsp;
 [![License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/bowang-lab/IntegrAO/blob/main/LICENSE)
 
 
@@ -12,12 +12,19 @@ This is the official codebase for **Integrate Any Omics: Towards genome-wide dat
 
 
 ## 🔨 Installation
-This package requires Python version 3.6 or greater. If you want to utilize GPU computation, make sure you install the matching Pytorch and CUDA versions. 
+IntegrAO works with Python >= 3.7. Please make sure you have the correct version of Python pre-installation.
+
 1. Create a virtual environment:  `conda create -n integrAO python=3.10 -y` and `conda activate integrAO`
-2. Install [Pytorch](https://pytorch.org/get-started/previous-versions/#linux-and-windows-4) 2.1.0: `pip install torch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 --index-url https://download.pytorch.org/whl/cu118`
-3. Install [Pytorch-geometric](https://pytorch-geometric.readthedocs.io/en/latest/install/installation.html): `pip install torch_geometric`
-4. Install other requirements: `pip install -r requirement.txt`
-5. Download code: `git clone https://github.com/bowang-lab/IntegrAO.git`
+2. Install [Pytorch 2.1.0](https://pytorch.org/get-started/locally/)
+3. IntegrAO is available on PyPI. To install IntegrAO, run the following command: `pip install integrAO`
+
+For developing, clone this repo with following commands:
+
+```bash
+$ git clone this-repo-url
+$ cd IntegrAO
+$ pip install -r requirement.txt
+```
 
 
 ## 🧬 Introduction
