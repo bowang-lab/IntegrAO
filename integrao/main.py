@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 import time
-from scipy import sparse, stats
 from snf.compute import _flatten, _B0_normalized, _find_dominate_set
 from sklearn.utils.validation import (
     check_array,
