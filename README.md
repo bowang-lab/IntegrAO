@@ -2,7 +2,7 @@
 This is the official codebase for **Integrate Any Omics: Towards genome-wide data integration for patient stratification**.
 
 [![Preprint](https://img.shields.io/badge/preprint-available-brightgreen)](https://arxiv.org/abs/2401.07937) &nbsp;
-[![Documentation](https://img.shields.io/badge/docs-available-brightgreen)]() &nbsp;
+[![Documentation](https://img.shields.io/badge/docs-available-brightgreen)](https://integrao.readthedocs.io/en/latest/) &nbsp;
 [![PyPI version](https://badge.fury.io/py/integrao.svg)](https://badge.fury.io/py/integrao) &nbsp;
 [![License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/bowang-lab/IntegrAO/blob/main/LICENSE)
 
