@@ -1,0 +1,6 @@
+
+# The following packages are for .readthedocs
+sphinx
+sphinx_rtd_theme
+nbsphinx
+nbsphinx-link
