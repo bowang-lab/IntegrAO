@@ -6,6 +6,7 @@ This is the official codebase for **Integrate Any Omics: Towards genome-wide dat
 [![PyPI version](https://badge.fury.io/py/integrao.svg)](https://pypi.org/project/integrao/) &nbsp;
 [![License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/bowang-lab/IntegrAO/blob/main/LICENSE)
 
+🥳 **Updates**: IntegrAO has been accepted to [Nature Machine Intelligence](https://www.nature.com/articles/s42256-024-00942-3)!
 
 ## 🔨 Hardware requirements
 `IntegrAO` package requires only a standard computer with enough RAM to support the in-memory operations.
