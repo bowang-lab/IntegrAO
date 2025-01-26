@@ -45,10 +45,15 @@ We offer the following tutorials for demonstration:
 
 ## Citing IntegrAO
 ```bash
-@article{ma2024integrate,
-  title={Integrate Any Omics: Towards genome-wide data integration for patient stratification},
+@article{ma2025moving,
+  title={Moving towards genome-wide data integration for patient stratification with Integrate Any Omics},
   author={Ma, Shihao and Zeng, Andy GX and Haibe-Kains, Benjamin and Goldenberg, Anna and Dick, John E and Wang, Bo},
-  journal={arXiv preprint arXiv:2401.07937},
-  year={2024}
+  journal={Nature Machine Intelligence},
+  volume={7},
+  number={1},
+  pages={29--42},
+  year={2025},
+  publisher={Nature Publishing Group}
+}
 }
 ```
