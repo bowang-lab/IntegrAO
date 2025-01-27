@@ -1,4 +1,4 @@
-# IntegrAO
+# IntegrAO: Integrate Any Omics 
 This is the official codebase for **Integrate Any Omics: Towards genome-wide data integration for patient stratification**.
 
 [![Preprint](https://img.shields.io/badge/preprint-available-brightgreen)](https://arxiv.org/abs/2401.07937) &nbsp;
