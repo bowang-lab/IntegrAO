@@ -28,6 +28,7 @@ class integrao_integrater(object):
         beta=1.0,
         mu=0.5,
         mask=False,
+        random_state=42,
     ):
         self.datasets = datasets
         self.dataset_name = dataset_name
@@ -39,6 +40,7 @@ class integrao_integrater(object):
         self.beta = beta
         self.mu = mu
         self.mask = False
+        self.random_state=random_state
 
         # data indexing
         (
@@ -93,6 +95,7 @@ class integrao_integrater(object):
             self.dict_sampleToIndexs,
             datasets_val,
             P=fused_networks_val,
+            random_state=self.random_state,
             neighbor_size=self.neighbor_size,
             embedding_dims=self.embedding_dims,
             alighment_epochs=self.alighment_epochs,
@@ -179,7 +182,7 @@ class integrao_integrater(object):
         fused_networks_val = [x.values for x in self.fused_networks]
 
         # calculate the final similarity graph
-        dist_final = dist2(new_dataset.values, self.final_embeds.values)
+        dist_final = dist2(new_datasets.values, self.final_embeds.values)
         Wall_final = snf.compute.affinity_matrix(
             dist_final, K=self.neighbor_size, mu=self.mu
         )
@@ -197,6 +200,7 @@ class integrao_predictor(object):
         modalities_name_list=None,
         neighbor_size=None,
         embedding_dims=50,
+        hidden_channels=128,
         fusing_iteration=20,
         normalization_factor=1.0,
         alighment_epochs=1000,
@@ -208,6 +212,7 @@ class integrao_predictor(object):
         self.dataset_name = dataset_name
         self.modalities_name_list = modalities_name_list
         self.embedding_dims = embedding_dims
+        self.hidden_channels = hidden_channels
         self.fusing_iteration = fusing_iteration
         self.normalization_factor = normalization_factor
         self.alighment_epochs = alighment_epochs
@@ -231,6 +236,11 @@ class integrao_predictor(object):
         else:
             self.neighbor_size = neighbor_size
         print("Neighbor size:", self.neighbor_size)
+
+        self.feature_dims = []
+        for i in range(len(self.datasets)):
+            self.feature_dims.append(np.shape(self.datasets[i])[1])
+        
 
     def network_diffusion(self):
         S_dfs = []
@@ -258,9 +268,54 @@ class integrao_predictor(object):
         )
         return self.fused_networks
 
-    def inference(self, model, new_datasets, modalities_names):
+
+    def _load_pre_trained_weights(self, model, model_path, device):
+        try:
+            state_dict = torch.load(model_path, map_location=device)
+            model.load_my_state_dict(state_dict)
+            print("Loaded pre-trained model with success.")
+        except FileNotFoundError:
+            print("Pre-trained weights not found. Training from scratch.")
+
+        return model
+    
+    def inference_unsupervised(self, model_path, new_datasets, modalities_names):
         # loop through the new_dataset and create Graphdatase
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+        from integrao.IntegrAO_unsupervised import IntegrAO
+        model = IntegrAO(self.feature_dims, self.hidden_channels, self.embedding_dims)
+        model = self._load_pre_trained_weights(model, model_path, device)
+
+        x_dict = {}
+        edge_index_dict = {}
+        for i, modal in enumerate(new_datasets):
+            # find the index of the modal in the self.modalities_name_list
+            model_name = modalities_names[i]
+            modal_index = self.modalities_name_list.index(model_name)
+
+            dataset = GraphDataset(
+                self.neighbor_size,
+                modal.values,
+                self.fused_networks[modal_index].values,
+                transform=T.ToDevice(device),
+            )
+            modal_dg = dataset[0]
+
+            x_dict[modal_index] = modal_dg.x
+            edge_index_dict[modal_index] = modal_dg.edge_index
+
+        # Now to do the inference
+        embeddings= model(x_dict, edge_index_dict)
+
+
+        return embeddings
+
+    def inference_supervised(self, model_path, new_datasets, modalities_names):
+        # loop through the new_dataset and create Graphdatase
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+        from integrao.IntegrAO_supervised import IntegrAO
 
         x_dict = {}
         edge_index_dict = {}
