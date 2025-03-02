@@ -12,6 +12,8 @@ This is the official codebase for **Integrate Any Omics: Towards genome-wide dat
 
 **[2025.01.23]** 🥳 IntegrAO has been accepted to [Nature Machine Intelligence](https://www.nature.com/articles/s42256-024-00942-3)!
 
+**[2024.01.15]** 🥳 IntegrAO [Preprint](https://arxiv.org/abs/2401.07937) available!
+
 ## 🔨 Hardware requirements
 `IntegrAO` package requires only a standard computer with enough RAM to support the in-memory operations.
 
