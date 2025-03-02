@@ -417,3 +417,85 @@ class integrao_predictor(object):
         preds = np.argmax(preds, axis=1)
 
         return preds
+
+
+    def interpret_supervised(self, model_path, result_dir, new_datasets, modalities_names):
+        # loop through the new_dataset and create Graphdatase
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+        from integrao.IntegrAO_supervised import IntegrAO
+        model = IntegrAO(self.feature_dims, self.hidden_channels, self.embedding_dims, num_classes=self.num_classes).to(device)
+        model = self._load_pre_trained_weights(model, model_path, device)
+
+        # explain the model
+        from captum.attr import IntegratedGradients
+
+        # It takes variable node features (x) for a given domain,
+        # while keeping the rest of the inputs (static_x_dict, edge_index_dict, and domain_sample_ids) fixed.
+        def custom_forward(x, static_x_dict, edge_index_dict, domain, domain_sample_ids):
+            x_dict = static_x_dict.copy()
+            x_dict[domain] = x 
+
+            _, _, output, _ = model(x_dict, edge_index_dict, domain_sample_ids)
+
+            # Aggregate output per sample to a scalar.
+            # Here we sum over the class dimension (dim=1); adjust if you need a different reduction; for example just a single class.
+            return output.sum(dim=1)
+
+
+        # Prepare the data dictionaries for node features and edge indices.
+        x_dict = {}
+        edge_index_dict = {}
+        for i, modal in enumerate(new_datasets):
+            # find the index of the modal in the self.modalities_name_list
+            model_name = modalities_names[i]
+            modal_index = self.modalities_name_list.index(model_name)
+
+            dataset = GraphDataset(
+                self.neighbor_size,
+                modal.values,
+                self.fused_networks[modal_index].values,
+                transform=T.ToDevice(device),
+            )
+            modal_dg = dataset[0]
+
+            x_dict[modal_index] = modal_dg.x
+            edge_index_dict[modal_index] = modal_dg.edge_index
+
+        # Compute feature importances using IntegratedGradients.
+        feat_importances = {}
+        for domain in x_dict:
+            x_input = x_dict[domain]
+            static_x = {k: x_dict[k] for k in x_dict}
+
+            ig = IntegratedGradients(custom_forward)
+
+            attributions, delta = ig.attribute(
+                inputs=x_input,
+                additional_forward_args=(static_x, edge_index_dict, domain, self.dict_original_order),
+                return_convergence_delta=True
+            )
+
+            if domain not in feat_importances:
+                feat_importances[domain] = []
+            feat_importances[domain].append(attributions.detach().cpu().numpy())
+
+
+        df_list = []
+        for domain in feat_importances:
+
+            # Concatenate along the first axis (nodes).
+            feat_importances[domain] = np.concatenate(feat_importances[domain], axis=0)
+            num_feats = feat_importances[domain].shape[1]
+            # Create a DataFrame; here columns are named feat_0, feat_1, etc.
+            df = pd.DataFrame(feat_importances[domain], columns=[f'feat_{i}' for i in range(num_feats)])
+            df_list.append(df)
+
+            # save the feature importance
+            csv_path = os.path.join(result_dir, f'{modalities_names[domain]}_feat_importance.csv')
+            df.to_csv(csv_path, index=False)
+            print(df.shape)
+
+            print(f"Saved feature importances for domain {modalities_names[domain]} to {csv_path}")
+        
+        return df_list
