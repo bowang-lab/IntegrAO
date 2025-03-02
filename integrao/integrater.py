@@ -95,7 +95,6 @@ class integrao_integrater(object):
             self.dict_sampleToIndexs,
             datasets_val,
             P=fused_networks_val,
-            random_state=self.random_state,
             neighbor_size=self.neighbor_size,
             embedding_dims=self.embedding_dims,
             alighment_epochs=self.alighment_epochs,
@@ -152,44 +151,6 @@ class integrao_integrater(object):
         Wall_final = _stable_normalized(Wall_final)
 
         return self.final_embeds, Wall_final, self.models, preds
-
-    def inference(self, new_datasets, modalities_names):
-        # loop through the new_dataset and create Graphdatase
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
-        x_dict = {}
-        edge_index_dict = {}
-        for i, modal in enumerate(new_datasets):
-            # find the index of the modal in the self.modalities_name_list
-            model_name = modalities_names[i]
-            modal_index = self.modalities_name_list.index(model_name)
-
-            dataset = GraphDataset(
-                self.neighbor_size,
-                modal.values,
-                self.fused_networks[modal_index].values,
-                transform=T.ToDevice(device),
-            )
-            modal_dg = dataset[0]
-
-            x_dict[modal_index] = modal_dg.x
-            edge_index_dict[modal_index] = modal_dg.edge_index
-
-        # Now to do the inference
-
-        # turn pandas dataframe into np array
-        datasets_val = [x.values for x in self.datasets]
-        fused_networks_val = [x.values for x in self.fused_networks]
-
-        # calculate the final similarity graph
-        dist_final = dist2(new_datasets.values, self.final_embeds.values)
-        Wall_final = snf.compute.affinity_matrix(
-            dist_final, K=self.neighbor_size, mu=self.mu
-        )
-
-        Wall_final = _stable_normalized(Wall_final)
-
-        return Wall_final
 
 
 class integrao_predictor(object):
@@ -272,7 +233,7 @@ class integrao_predictor(object):
     def _load_pre_trained_weights(self, model, model_path, device):
         try:
             state_dict = torch.load(model_path, map_location=device)
-            model.load_my_state_dict(state_dict)
+            model.load_state_dict(state_dict)
             print("Loaded pre-trained model with success.")
         except FileNotFoundError:
             print("Pre-trained weights not found. Training from scratch.")
@@ -284,7 +245,7 @@ class integrao_predictor(object):
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
         from integrao.IntegrAO_unsupervised import IntegrAO
-        model = IntegrAO(self.feature_dims, self.hidden_channels, self.embedding_dims)
+        model = IntegrAO(self.feature_dims, self.hidden_channels, self.embedding_dims).to(device)
         model = self._load_pre_trained_weights(model, model_path, device)
 
         x_dict = {}
@@ -306,10 +267,37 @@ class integrao_predictor(object):
             edge_index_dict[modal_index] = modal_dg.edge_index
 
         # Now to do the inference
+        # ---------------------------------------------------------
         embeddings= model(x_dict, edge_index_dict)
+        for i in range(len(new_datasets)):
+            embeddings[i] = embeddings[i].detach().cpu().numpy()  
 
+        final_embedding = np.array([]).reshape(0, self.embedding_dims)
+        for key in self.dict_sampleToIndexs:
+            sample_embedding = np.zeros((1, self.embedding_dims))
 
-        return embeddings
+            for (dataset, index) in self.dict_sampleToIndexs[key]:
+                sample_embedding += embeddings[dataset][index]
+            sample_embedding /= len(self.dict_sampleToIndexs[key])
+
+            final_embedding = np.concatenate((final_embedding, sample_embedding), axis=0)
+
+        # Now format the final embeddings
+        # ---------------------------------------------------------
+        final_embedding_df = pd.DataFrame(
+            data=final_embedding, index=self.dict_sampleToIndexs.keys()
+        )
+        final_embedding_df.sort_index(inplace=True)
+
+        # calculate the final similarity graph
+        dist_final = dist2(final_embedding_df.values, final_embedding_df.values)
+        Wall_final = snf.compute.affinity_matrix(
+            dist_final, K=self.neighbor_size, mu=self.mu
+        )
+
+        Wall_final = _stable_normalized(Wall_final)
+
+        return final_embedding_df, Wall_final
 
     def inference_supervised(self, model_path, new_datasets, modalities_names):
         # loop through the new_dataset and create Graphdatase
