@@ -7,6 +7,7 @@ from integrao.util import data_indexing
 import snf
 import pandas as pd
 import numpy as np
+import os
 
 import torch
 import torch_geometric.transforms as T
@@ -299,6 +300,86 @@ class integrao_predictor(object):
         Wall_final = _stable_normalized(Wall_final)
 
         return final_embedding_df, Wall_final
+    
+    def interpret_unsupervised(self, model_path, result_dir, new_datasets, modalities_names):
+        # loop through the new_dataset and create Graphdatase
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+        from integrao.IntegrAO_unsupervised import IntegrAO
+        model = IntegrAO(self.feature_dims, self.hidden_channels, self.embedding_dims).to(device)
+        model = self._load_pre_trained_weights(model, model_path, device)
+
+
+        # explain the model
+        from captum.attr import IntegratedGradients
+
+        # It takes as input the variable node features for one domain,
+        # while the remaining features and edge indices remain fixed.
+        def custom_forward(x, static_x_dict, edge_index_dict, domain):
+            x_dict = static_x_dict.copy()
+            x_dict[domain] = x 
+
+            out_dict = model(x_dict, edge_index_dict)
+
+            return out_dict[domain].sum(dim=1)   # iG requires scalar output; so we sum the output of the embeddings
+
+        # prepare the data
+        x_dict = {}
+        edge_index_dict = {}
+        for i, modal in enumerate(new_datasets):
+            model_name = modalities_names[i]
+            modal_index = self.modalities_name_list.index(model_name)
+
+            dataset = GraphDataset(
+                self.neighbor_size,
+                modal.values,
+                self.fused_networks[modal_index].values,
+                transform=T.ToDevice(device),
+            )
+            modal_dg = dataset[0]
+
+            x_dict[modal_index] = modal_dg.x
+            edge_index_dict[modal_index] = modal_dg.edge_index
+
+        # Loop over each domain (modality)
+        # ---------------------------------------------------------
+        feat_importances = {}
+        for domain in x_dict:
+            x_input = x_dict[domain] # The variable input for the current domain.
+            static_x = {k: x_dict[k] for k in x_dict}
+
+            ig = IntegratedGradients(custom_forward)
+
+            attributions, delta = ig.attribute(
+                inputs=x_input,
+                additional_forward_args=(static_x, edge_index_dict, domain),
+                return_convergence_delta=True
+            )
+
+            if domain not in feat_importances:
+                feat_importances[domain] = []
+            feat_importances[domain].append(attributions.detach().cpu().numpy())
+
+
+        df_list = []
+        for domain in feat_importances:
+
+            # Concatenate along the first axis (nodes).
+            feat_importances[domain] = np.concatenate(feat_importances[domain], axis=0)
+            num_feats = feat_importances[domain].shape[1]
+            # Create a DataFrame; here columns are named feat_0, feat_1, etc.
+            df = pd.DataFrame(feat_importances[domain], columns=[f'feat_{i}' for i in range(num_feats)])
+            df_list.append(df)
+
+            # save the feature importance
+            csv_path = os.path.join(result_dir, f'{modalities_names[domain]}_feat_importance.csv')
+            df.to_csv(csv_path, index=False)
+            print(df.shape)
+
+            print(f"Saved feature importances for domain {modalities_names[domain]} to {csv_path}")
+
+        return  df_list
+
 
     def inference_supervised(self, model_path, new_datasets, modalities_names):
         # loop through the new_dataset and create Graphdatase
