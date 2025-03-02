@@ -27,7 +27,6 @@ class integrao_integrater(object):
         alighment_epochs=1000,
         beta=1.0,
         mu=0.5,
-        mask=False,
         random_state=42,
     ):
         self.datasets = datasets
@@ -39,7 +38,6 @@ class integrao_integrater(object):
         self.alighment_epochs = alighment_epochs
         self.beta = beta
         self.mu = mu
-        self.mask = False
         self.random_state=random_state
 
         # data indexing
@@ -167,7 +165,7 @@ class integrao_predictor(object):
         alighment_epochs=1000,
         beta=1.0,
         mu=0.5,
-        mask=False,
+        num_classes=None,       
     ):
         self.datasets = datasets
         self.dataset_name = dataset_name
@@ -179,7 +177,7 @@ class integrao_predictor(object):
         self.alighment_epochs = alighment_epochs
         self.beta = beta
         self.mu = mu
-        self.mask = False
+        self.num_classes = num_classes
 
         # data indexing
         (
@@ -201,6 +199,9 @@ class integrao_predictor(object):
         self.feature_dims = []
         for i in range(len(self.datasets)):
             self.feature_dims.append(np.shape(self.datasets[i])[1])
+
+        if num_classes is not None:
+            self.num_classes = num_classes
         
 
     def network_diffusion(self):
@@ -304,6 +305,8 @@ class integrao_predictor(object):
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
         from integrao.IntegrAO_supervised import IntegrAO
+        model = IntegrAO(self.feature_dims, self.hidden_channels, self.embedding_dims, num_classes=self.num_classes).to(device)
+        model = self._load_pre_trained_weights(model, model_path, device)
 
         x_dict = {}
         edge_index_dict = {}
