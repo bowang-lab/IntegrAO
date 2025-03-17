@@ -8,7 +8,7 @@ This is the official codebase for **Integrate Any Omics: Towards genome-wide dat
 
 **Updates**: 
 
-**[2025.03.02]** We added the functionalities of extracting **feature importance** for the unsupervised and supervised IntegrAO models! Feel free to check it out here: [Unsupervised integration feature importance](https://github.com/bowang-lab/IntegrAO/blob/main/tutorials/unsupervised_integration_feature_importance.ipynb) and [Supervised integration feature importance](https://github.com/bowang-lab/IntegrAO/blob/main/tutorials/supervised_integration_feature_importance.ipynb). Welcome for suggestions!
+**[2025.03.02]** 🔥🔥🔥 We added the functionalities of extracting **feature importance** for the unsupervised and supervised IntegrAO models! Feel free to check it out here: [Unsupervised integration feature importance](https://github.com/bowang-lab/IntegrAO/blob/main/tutorials/unsupervised_integration_feature_importance.ipynb) and [Supervised integration feature importance](https://github.com/bowang-lab/IntegrAO/blob/main/tutorials/supervised_integration_feature_importance.ipynb). Welcome for suggestions!
 
 **[2025.01.23]** 🥳 IntegrAO has been accepted to [Nature Machine Intelligence](https://www.nature.com/articles/s42256-024-00942-3)!
 
