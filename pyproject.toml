@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "integrao"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
     "snfpy",
     "networkx==3.0",
